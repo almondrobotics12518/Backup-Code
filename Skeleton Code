@@ -1,0 +1,41 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+
+@TeleOp(name="Skeleton", group="test")
+public class Skeleton extends OpMode {
+
+    public DcMotor leftFront;
+    public DcMotor leftBack;
+    public DcMotor rightFront;
+    public DcMotor rightBack;
+    private double drivePower = 1;
+
+    @Override
+    public void init() {
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+    }
+    @Override
+    public void start() {
+
+    }
+    @Override
+    public void loop() {
+
+    }
+    @Override
+    public void stop() {
+
+    }
+
+}
