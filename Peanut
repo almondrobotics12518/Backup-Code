@@ -1,0 +1,127 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import java.io.OptionalDataException;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@TeleOp(name="Peanutz", group="test")
+public class Peanutz extends OpMode {
+
+    public DcMotor leftFront;
+    public DcMotor leftBack;
+    public DcMotor rightFront;
+    public DcMotor rightBack;
+    public DcMotor iSlider;
+    public DcMotor iDumper;
+    public DcMotor intake;
+    public DcMotor dSlider;
+    public Servo dumper;
+    private double drivePower = 0.4;
+
+    @Override
+    public void init() {
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+        iSlider = hardwareMap.dcMotor.get("iSlider");
+        dSlider = hardwareMap.dcMotor.get("dSlider");
+        iDumper = hardwareMap.dcMotor.get("iDumper");
+        intake = hardwareMap.dcMotor.get("Intake");
+
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        dumper = hardwareMap.servo.get("Dumper");
+
+        // sets motors to brake if they are at 0 power
+        /*iDumper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        iSlider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        dSlider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        */
+    }
+    @Override
+    public void start() {
+
+    }
+    @Override
+    public void loop() {
+        //rotates intake inward
+        iSlider.setPower(gamepad2.right_stick_y);
+        dSlider.setPower(gamepad2.left_stick_y);
+
+        if (gamepad1.right_stick_y > 0) {
+            leftBack.setPower(drivePower);
+            leftFront.setPower(drivePower);
+            rightBack.setPower(drivePower);
+            rightFront.setPower(drivePower);
+
+        } else if (gamepad1.right_stick_y < 0) {
+            leftBack.setPower(-drivePower);
+            leftFront.setPower(-drivePower);
+            rightBack.setPower(-drivePower);
+            rightFront.setPower(-drivePower);
+
+        } else if (gamepad1.right_stick_x > 0) {
+            leftBack.setPower(-drivePower);
+            leftFront.setPower(-drivePower);
+            rightBack.setPower(drivePower);
+            rightFront.setPower(drivePower);
+
+        } else if (gamepad1.right_stick_x < 0) {
+            leftBack.setPower(drivePower);
+            leftFront.setPower(drivePower);
+            rightBack.setPower(-drivePower);
+            rightFront.setPower(-drivePower);
+
+        } else if (gamepad1.right_trigger > 0) {
+            //dumps minerals
+            dumper.setPosition(1);
+                    try {
+                        Thread.sleep(2750);
+                    } catch(InterruptedException e) {
+                        System.out.println("got interrupted!");
+                    }
+            dumper.setPosition(0.2);
+                    try {
+                        Thread.sleep(1000);
+                    } catch(InterruptedException e) {
+                        System.out.println("got interrupted!");
+                    }
+        } else if (gamepad1.left_stick_y != 0) {
+            //dumps minerals into scoring dumper
+            iDumper.setPower(0.4 * -gamepad1.left_stick_y);
+
+        } else if (gamepad2.right_trigger > 0) {
+            intake.setPower(0.7);
+
+        } else if (gamepad2.left_trigger > 0) {
+            intake.setPower(-0.7);
+
+        } else {
+            rightFront.setPower(0);
+            leftFront.setPower(0);
+            rightBack.setPower(0);
+            leftBack.setPower(0);
+            intake.setPower(0);
+            iDumper.setPower(0);
+            iSlider.setPower(0);
+            dSlider.setPower(0);
+
+        }
+    }
+    @Override
+    public void stop() {
+
+    }
+
+}
