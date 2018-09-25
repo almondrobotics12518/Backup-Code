@@ -1,0 +1,111 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+
+@Autonomous(name="auto", group="test")
+public class auto extends OpMode {
+
+    public DcMotor leftFront;
+    public DcMotor leftBack;
+    public DcMotor rightFront;
+    public DcMotor rightBack;
+    private double drivePower = 0.25;
+
+    @Override
+    public void init() {
+        //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+
+    }
+    @Override
+    public void start() {
+        //goes forward
+        leftBack.setPower(drivePower);
+        leftFront.setPower(drivePower);
+        rightBack.setPower(-drivePower);
+        rightFront.setPower(-drivePower);
+        
+        //sends telemetry data of motor power for debugging
+        
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", leftBack.getPower());
+        telemetry.addData("Right Front power", leftBack.getPower());
+        telemetry.update();
+
+        try {
+            Thread.sleep(3000);
+        } catch(InterruptedException e) {
+            System.out.println("got interrupted!");
+        }
+        leftBack.setPower(drivePower);
+        leftBack.setPower(drivePower);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", leftBack.getPower());
+        telemetry.addData("Right Front power", leftBack.getPower());
+        telemetry.update();
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            System.out.println("got interrupted!");
+        }
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", leftBack.getPower());
+        telemetry.addData("Right Front power", leftBack.getPower());
+        telemetry.update();
+
+        leftBack.setPower(drivePower);
+        leftBack.setPower(drivePower);
+        rightBack.setPower(-drivePower);
+        rightFront.setPower(-drivePower);
+        try {
+        Thread.sleep(5000);
+    } catch(InterruptedException e) {
+        System.out.println("got interrupted!");
+    }
+    /*
+        leftBack.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+*/
+    }
+    @Override
+    public void loop() {
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", leftBack.getPower());
+        telemetry.addData("Right Front power", leftBack.getPower());
+        telemetry.update();
+
+    }
+    @Override
+    public void stop() {
+
+    }
+
+}
