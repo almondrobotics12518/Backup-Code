@@ -14,94 +14,130 @@ public class auto extends OpMode {
     public DcMotor leftBack;
     public DcMotor rightFront;
     public DcMotor rightBack;
-    private double drivePower = 0.25;
+    private double drivePower = 1;
+    private int targetPower = 5500;
+
+
+
 
     @Override
     public void init() {
-        //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         leftFront = hardwareMap.dcMotor.get("LeftFront");
         leftBack = hardwareMap.dcMotor.get("LeftBack");
         rightFront = hardwareMap.dcMotor.get("RightFront");
         rightBack = hardwareMap.dcMotor.get("RightBack");
 
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
     }
     @Override
     public void start() {
         //goes forward
+        leftBack.setTargetPosition(targetPower);
+        leftFront.setTargetPosition(targetPower);
+        rightBack.setTargetPosition(targetPower);
+        rightFront.setTargetPosition(targetPower);
+        //replace the rightfront encoder wire
+        leftBack.setPower(drivePower);
+        leftFront.setPower(drivePower);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+
+
+
+        //sends telemetry data of motor power for debugging
+
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
+
+        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
+        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
+        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
+        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
+
+
+        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
+        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
+        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
+        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
+        telemetry.update();
+
+    /*
+        leftBack.setTargetPosition(1000);
+        leftFront.setTargetPosition(1000);
+        rightBack.setTargetPosition(1000);
+        rightFront.setTargetPosition(1000);
+
         leftBack.setPower(drivePower);
         leftFront.setPower(drivePower);
         rightBack.setPower(-drivePower);
         rightFront.setPower(-drivePower);
-        
-        //sends telemetry data of motor power for debugging
-        
-        telemetry.addData("Left Back power", leftBack.getPower());
-        telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", leftBack.getPower());
-        telemetry.addData("Right Front power", leftBack.getPower());
-        telemetry.update();
-
-        try {
-            Thread.sleep(3000);
-        } catch(InterruptedException e) {
-            System.out.println("got interrupted!");
-        }
-        leftBack.setPower(drivePower);
-        leftBack.setPower(drivePower);
-        rightBack.setPower(drivePower);
-        rightFront.setPower(drivePower);
 
         telemetry.addData("Left Back power", leftBack.getPower());
         telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", leftBack.getPower());
-        telemetry.addData("Right Front power", leftBack.getPower());
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
         telemetry.update();
 
-        try {
-            Thread.sleep(2000);
-        } catch(InterruptedException e) {
-            System.out.println("got interrupted!");
-        }
-        telemetry.addData("Left Back power", leftBack.getPower());
-        telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", leftBack.getPower());
-        telemetry.addData("Right Front power", leftBack.getPower());
-        telemetry.update();
 
+        leftBack.setTargetPosition(1000);
+        leftFront.setTargetPosition(1000);
+        rightBack.setTargetPosition(1000);
+        rightFront.setTargetPosition(1000);
+        //
         leftBack.setPower(drivePower);
-        leftBack.setPower(drivePower);
+        leftFront.setPower(drivePower);
         rightBack.setPower(-drivePower);
         rightFront.setPower(-drivePower);
-        try {
-        Thread.sleep(5000);
-    } catch(InterruptedException e) {
-        System.out.println("got interrupted!");
-    }
-    /*
-        leftBack.setPower(0);
-        leftBack.setPower(0);
-        rightBack.setPower(0);
-        rightFront.setPower(0);
+
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
+        telemetry.update();
+
 */
+
+
     }
     @Override
     public void loop() {
         telemetry.addData("Left Back power", leftBack.getPower());
         telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", leftBack.getPower());
-        telemetry.addData("Right Front power", leftBack.getPower());
-        telemetry.update();
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
 
+        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
+        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
+        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
+        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
+
+
+        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
+        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
+        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
+        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
+        telemetry.update();
     }
     @Override
     public void stop() {
