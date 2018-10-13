@@ -1,0 +1,163 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+@Autonomous
+public class AutoGoldSide extends LinearOpMode{
+
+    public DcMotor leftFront;
+    public DcMotor leftBack;
+    public DcMotor rightFront;
+    public DcMotor rightBack;
+    public DcMotor intake;
+    private double drivePower = 1;
+    private int targetPos = 6500;
+    private int targetOffset = 1625;
+    private int turningPos = 3200;
+    private int craterPos = 13000;
+    private int craterOffset = 4000;
+    private void getTelemetry() {
+        //sends data on current power, current position, and target position
+
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
+
+        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
+        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
+        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
+        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
+
+        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
+        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
+        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
+        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
+
+        telemetry.update();
+    }
+    private void resetMotors() {
+        //Resets the motor encoders back to 0
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //Changes mode to run to position
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    private void setPowerZero(){
+        //set drive power to 0
+        leftBack.setPower(drivePower*0);
+        leftFront.setPower(drivePower*0);
+        rightBack.setPower(drivePower*0);
+        rightFront.setPower(0);
+    }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        //sets motors to hardware
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+        intake = hardwareMap.dcMotor.get("Intake");
+        //reverses the left wheels
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        //sets motors to brake when given 0 power
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //resets encoders
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //sets mode to run to position
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //goes forward from gold side to depot in a straight line
+        telemetry.addData("Status","Preparing to go to Depot");
+        telemetry.update();
+        //sets the speed of motors, left side is faster because our wheels suck
+        leftBack.setPower(drivePower*1.35);
+        leftFront.setPower(drivePower*1.35);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+        //sets target position
+        leftBack.setTargetPosition(targetPos+targetOffset);
+        leftFront.setTargetPosition(targetPos+targetOffset);
+        rightBack.setTargetPosition(targetPos);
+        rightFront.setTargetPosition(targetPos);
+
+
+        //checks if action is complete and sends telemetry
+        while(leftBack.isBusy() && rightBack.isBusy() && leftFront.isBusy() && rightFront.isBusy()){
+            getTelemetry();
+        }
+        //set power to 0
+        setPowerZero();
+        //set the team marker into the depot
+        intake.setPower(-0.7);
+        //sleep for 2 seconds
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        intake.setPower(0);
+
+
+        //Robot turns 135 degrees in depot towards crater
+        leftBack.setTargetPosition(targetPos+targetOffset+turningPos);
+        leftFront.setTargetPosition(targetPos+targetOffset+turningPos);
+        rightFront.setTargetPosition(targetPos-turningPos);
+        rightBack.setTargetPosition(targetPos-turningPos);
+        //sets motor power to drivePower
+        leftBack.setPower(drivePower*1.25);
+        leftFront.setPower(drivePower*1.25);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+        //sends telemetry while motors are busy
+        while(rightBack.isBusy() && leftBack.isBusy() && rightFront.isBusy() && leftFront.isBusy()){
+            getTelemetry();
+        }
+        //sets motor power to zero (brakes)
+        setPowerZero();
+        //sleeps for 2 seconds
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //goes to crater
+        leftBack.setTargetPosition(targetPos+targetOffset+turningPos+craterPos+craterOffset);
+        leftFront.setTargetPosition(targetPos+targetOffset+turningPos+craterPos+craterOffset);
+        rightFront.setTargetPosition(targetPos-turningPos+craterPos);
+        rightBack.setTargetPosition(targetPos-turningPos+craterPos);
+        //sets drive power
+        leftBack.setPower(drivePower*1.35);
+        leftFront.setPower(drivePower*1.35);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+        //sends telemetry while in action
+        while(rightBack.isBusy() && leftBack.isBusy() && rightFront.isBusy() && leftFront.isBusy()){
+            getTelemetry();
+        }
+        //sets motors to 0 power
+        setPowerZero();
+    }
+}
