@@ -15,8 +15,50 @@ public class auto extends OpMode {
     public DcMotor rightFront;
     public DcMotor rightBack;
     private double drivePower = 1;
-    private int targetPower = 5500;
+    private int targetPos = 6500;
+    private int targetOffset = 1625;
+    private int turningPos = 3200;
+    private int craterPos = 15000;
+    private int craterOffset = 4000;
+    private void getTelemetry() {
+        //gives data on power, target position, and current position
 
+        telemetry.addData("Left Back power", leftBack.getPower());
+        telemetry.addData("Left Front power", leftFront.getPower());
+        telemetry.addData("Right Back power", rightBack.getPower());
+        telemetry.addData("Right Front power", rightFront.getPower());
+
+        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
+        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
+        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
+        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
+
+        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
+        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
+        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
+        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
+
+        telemetry.update();
+    }
+    private void resetMotors() {
+        //Resets the motor encoders back to 0
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    private void setPowerZero(){
+        leftBack.setPower(drivePower*0);
+        leftFront.setPower(drivePower*0);
+        rightBack.setPower(drivePower*0);
+        rightFront.setPower(0);
+    }
 
 
 
@@ -50,37 +92,82 @@ public class auto extends OpMode {
     }
     @Override
     public void start() {
-        //goes forward
-        leftBack.setTargetPosition(targetPower);
-        leftFront.setTargetPosition(targetPower);
-        rightBack.setTargetPosition(targetPower);
-        rightFront.setTargetPosition(targetPower);
-        //replace the rightfront encoder wire
-        leftBack.setPower(drivePower);
-        leftFront.setPower(drivePower);
+
+        //goes forward from gold side to depot in a straight line
+        telemetry.addData("Status","Preparing to go to Depot");
+        telemetry.update();
+
+        leftBack.setPower(drivePower*1.25);
+        leftFront.setPower(drivePower*1.25);
         rightBack.setPower(drivePower);
         rightFront.setPower(drivePower);
 
+        leftBack.setTargetPosition(targetPos+targetOffset);
+        leftFront.setTargetPosition(targetPos+targetOffset);
+        rightBack.setTargetPosition(targetPos);
+        rightFront.setTargetPosition(targetPos);
+        //sets power for motors, compensate left side power to allow robot to go straight
+
+
+        //sets motor power to zero
+        while(leftBack.isBusy() && rightBack.isBusy() && leftFront.isBusy() && rightFront.isBusy()){
+            getTelemetry();
+        }
+        //checks if action is complete
+        setPowerZero();
+        //sets motor power to 0
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //sleeps for 2 seconds
+
+
+
+        //Robot turns 135 degrees in depot towards crater
+
+        leftBack.setTargetPosition(targetPos+targetOffset+turningPos);
+        leftFront.setTargetPosition(targetPos+targetOffset+turningPos);
+        rightFront.setTargetPosition(targetPos-turningPos);
+        rightBack.setTargetPosition(targetPos-turningPos);
+        //sets motor power to drivePower
+        leftBack.setPower(drivePower*1.25);
+        leftFront.setPower(drivePower*1.25);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+
+        while(rightBack.isBusy() && leftBack.isBusy() && rightFront.isBusy() && leftFront.isBusy()){
+            getTelemetry();
+        }
+
+        setPowerZero();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        leftBack.setTargetPosition(targetPos+targetOffset+turningPos+craterPos+craterOffset);
+        leftFront.setTargetPosition(targetPos+targetOffset+turningPos+craterPos+craterOffset);
+        rightFront.setTargetPosition(targetPos-turningPos+craterPos);
+        rightBack.setTargetPosition(targetPos-turningPos+craterPos);
+
+        leftBack.setPower(drivePower*1.25);
+        leftFront.setPower(drivePower*1.25);
+        rightBack.setPower(drivePower);
+        rightFront.setPower(drivePower);
+
+        while(rightBack.isBusy() && leftBack.isBusy() && rightFront.isBusy() && leftFront.isBusy()){
+            getTelemetry();
+        }
+
+        setPowerZero();
+
+    }
 
 
         //sends telemetry data of motor power for debugging
-
-        telemetry.addData("Left Back power", leftBack.getPower());
-        telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", rightBack.getPower());
-        telemetry.addData("Right Front power", rightFront.getPower());
-
-        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
-        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
-        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
-        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
-
-
-        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
-        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
-        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
-        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
-        telemetry.update();
 
     /*
         leftBack.setTargetPosition(1000);
@@ -119,25 +206,10 @@ public class auto extends OpMode {
 */
 
 
-    }
+
     @Override
     public void loop() {
-        telemetry.addData("Left Back power", leftBack.getPower());
-        telemetry.addData("Left Front power", leftFront.getPower());
-        telemetry.addData("Right Back power", rightBack.getPower());
-        telemetry.addData("Right Front power", rightFront.getPower());
-
-        telemetry.addData("Left Back tar position", leftBack.getTargetPosition());
-        telemetry.addData("Left Front tar position", leftFront.getTargetPosition());
-        telemetry.addData("Right Back tar position", rightBack.getTargetPosition());
-        telemetry.addData("Right Front tar position", rightFront.getTargetPosition());
-
-
-        telemetry.addData("Left Back position", leftBack.getCurrentPosition());
-        telemetry.addData("Left Front position", leftFront.getCurrentPosition());
-        telemetry.addData("Right Back position", rightBack.getCurrentPosition());
-        telemetry.addData("Right Front position", rightFront.getCurrentPosition());
-        telemetry.update();
+        getTelemetry();
     }
     @Override
     public void stop() {
