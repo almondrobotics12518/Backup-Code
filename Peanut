@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Peanutz", group="test")
 public class Peanutz extends OpMode {
+    //Declaring motors and servos
 
     public DcMotor leftFront;
     public DcMotor leftBack;
@@ -21,6 +22,10 @@ public class Peanutz extends OpMode {
     public DcMotor intake;
     public DcMotor dSlider;
     public Servo dumper;
+    public Servo dumper2;
+
+    //declaring variable for power
+
     private double drivePower = 0.4;
 
     @Override
@@ -33,12 +38,17 @@ public class Peanutz extends OpMode {
         dSlider = hardwareMap.dcMotor.get("dSlider");
         iDumper = hardwareMap.dcMotor.get("iDumper");
         intake = hardwareMap.dcMotor.get("Intake");
+        dumper = hardwareMap.servo.get("Dumper");
+        dumper2 = hardwareMap.servo.get("Dumper2");
+
+        //Reversing direction of right motors
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        dumper = hardwareMap.servo.get("Dumper");
+
 
         // sets motors to brake if they are at 0 power
+
         /*iDumper.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         iSlider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -58,6 +68,7 @@ public class Peanutz extends OpMode {
         //rotates intake inward
         iSlider.setPower(gamepad2.right_stick_y);
         dSlider.setPower(gamepad2.left_stick_y);
+        //drives forward
 
         if (gamepad1.right_stick_y > 0) {
             leftBack.setPower(drivePower);
@@ -65,17 +76,23 @@ public class Peanutz extends OpMode {
             rightBack.setPower(drivePower);
             rightFront.setPower(drivePower);
 
+            //drives backwards
+
         } else if (gamepad1.right_stick_y < 0) {
             leftBack.setPower(-drivePower);
             leftFront.setPower(-drivePower);
             rightBack.setPower(-drivePower);
             rightFront.setPower(-drivePower);
 
+            //turns right
+
         } else if (gamepad1.right_stick_x > 0) {
             leftBack.setPower(-drivePower);
             leftFront.setPower(-drivePower);
             rightBack.setPower(drivePower);
             rightFront.setPower(drivePower);
+
+            //turns left
 
         } else if (gamepad1.right_stick_x < 0) {
             leftBack.setPower(drivePower);
@@ -86,12 +103,17 @@ public class Peanutz extends OpMode {
         } else if (gamepad1.right_trigger > 0) {
             //dumps minerals
             dumper.setPosition(1);
+            dumper2.setPosition(0);
+            telemetry.addData("dumper postion", dumper.getPosition());
+            telemetry.addData("dumper 2 postion", dumper2.getPosition());
+            telemetry.update();
                     try {
                         Thread.sleep(2750);
                     } catch(InterruptedException e) {
                         System.out.println("got interrupted!");
                     }
             dumper.setPosition(0.2);
+            dumper2.setPosition(0.8);
                     try {
                         Thread.sleep(1000);
                     } catch(InterruptedException e) {
@@ -108,6 +130,7 @@ public class Peanutz extends OpMode {
             intake.setPower(-0.7);
 
         } else {
+            //sets all motors to 0 power nothing is happening
             rightFront.setPower(0);
             leftFront.setPower(0);
             rightBack.setPower(0);
