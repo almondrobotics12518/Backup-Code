@@ -1,0 +1,55 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+@TeleOp(name="MecanumV2",group="teleop")
+public class MecanumV2 extends OpMode {
+
+    private DcMotor leftFront;
+    private DcMotor rightFront;
+    private DcMotor leftBack;
+    private DcMotor rightBack;
+    private float leftX;
+    private float leftY;
+
+    private double FL;
+    private double FR;
+    private double BL;
+    private double BR;
+
+    public void init(){
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+    public void loop(){
+        leftX = -gamepad1.left_stick_x; // Reverse left joystick's X coordinate
+        leftY = -gamepad1.left_stick_y; // Reverse left joystick's Y coordinate
+        //
+        FL = 0.5*(leftY-leftX);
+        FR = 0.5*(leftY+leftX);
+        BL = 0.5*(leftY+leftX);
+        BR = 0.5*(leftY-leftX);
+        // set motor power to drive power
+        leftFront.setPower(FL);
+        rightFront.setPower(FR);
+        leftBack.setPower(BL);
+        rightBack.setPower(BR);
+        // add telemetry for each wheel
+        telemetry.addData("FrontLeftPower",FL);
+        telemetry.addData("FrontRightPower",FR);
+        telemetry.addData("BackLeftPower",BL);
+        telemetry.addData("BackRightPower",BR);
+        telemetry.update();
+
+
+    }
+}
