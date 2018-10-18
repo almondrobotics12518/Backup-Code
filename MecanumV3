@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name="MecanumV2",group="teleop")
-public class MecanumV2 extends OpMode {
+@TeleOp(name="MecanumV3",group="teleop")
+public class MecanumV3 extends OpMode {
 
     private DcMotor leftFront;
     private DcMotor rightFront;
@@ -19,7 +19,8 @@ public class MecanumV2 extends OpMode {
     private double RF;
     private double LB;
     private double RB;
-
+       
+    @Override
     public void init(){
         leftFront = hardwareMap.dcMotor.get("LeftFront");
         leftBack = hardwareMap.dcMotor.get("LeftBack");
@@ -29,7 +30,8 @@ public class MecanumV2 extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-
+    
+    @Override
     public void loop(){
         leftX = gamepad1.left_stick_x; // Reverse left joystick's X coordinate
         leftY = gamepad1.left_stick_y; // Reverse left joystick's Y coordinate
@@ -56,4 +58,8 @@ public class MecanumV2 extends OpMode {
         
 
     }
+        @Override
+        public void stop(){
+        
+        }
 }
