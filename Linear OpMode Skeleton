@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-//@Autonomous
-//@TeleOp
+//@Autonomous (name="",group="")
+//@TeleOp (name="",group="")
 public class Linear_OpMode_Skeleton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
