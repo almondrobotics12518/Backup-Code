@@ -1,0 +1,34 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+//@Autonomous
+//@TeleOp
+public class Linear_OpMode_Skeleton extends LinearOpMode {
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        DcMotor leftFront;
+        DcMotor leftBack;
+        DcMotor rightFront;
+        DcMotor rightBack;
+        DcMotor lScrew;
+        DcMotor intake;
+        GoldAlignDetector detector;
+
+        double power;
+
+        leftFront = hardwareMap.dcMotor.get("LeftFront");
+        leftBack = hardwareMap.dcMotor.get("LeftBack");
+        rightFront = hardwareMap.dcMotor.get("RightFront");
+        rightBack = hardwareMap.dcMotor.get("RightBack");
+        lScrew = hardwareMap.dcMotor.get("LScrew");
+        intake = hardwareMap.dcMotor.get("Intake");
+
+        waitForStart();
+    }
+}
