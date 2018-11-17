@@ -3,12 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="AutoDepotSide",group="Auto")
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+@Autonomous
+
 public class AutoDepotSide extends LinearOpMode
 {
 
@@ -17,14 +25,34 @@ public class AutoDepotSide extends LinearOpMode
     private DcMotor rightFront;
     private DcMotor rightBack;
     private DcMotor lScrew;
+    private DcMotor intake;
+    BNO055IMU imu;
+    private Servo teamMarker;
     private GoldAlignDetector detector;
 
     private double power;
 
     @Override
-    public void runOpMode()
+    public void runOpMode() throws InterruptedException
 
     {
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
@@ -46,13 +74,15 @@ public class AutoDepotSide extends LinearOpMode
 
         //This section is the init section. This is where hardware map is put, and motors,
         //servos and sensors are initialized. Here we have hardware map for each of our motors.
-        power = 0.8;
+        power = 0.5;
         int tarPos = 2000;
+        teamMarker = hardwareMap.servo.get("tm");
         leftFront = hardwareMap.dcMotor.get("LeftFront");
         leftBack = hardwareMap.dcMotor.get("LeftBack");
         rightFront = hardwareMap.dcMotor.get("RightFront");
         rightBack = hardwareMap.dcMotor.get("RightBack");
         lScrew = hardwareMap.dcMotor.get("LScrew");
+        intake = hardwareMap.dcMotor.get("Intake");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -63,49 +93,43 @@ public class AutoDepotSide extends LinearOpMode
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lScrew.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        lScrew.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
 
         //Everything after the waitForStart() call is in the start portion of the program.
         //This will run when the user presses the start button.
         lScrew.setPower(-1);
-        lScrew.setTargetPosition(-10000);
-        sleep(11500);
+        sleep(10000);
         lScrew.setPower(0);
 
-        //Moves Forward
-        leftBack.setPower(power);
-        leftFront.setPower(power);
-        rightBack.setPower(power);
-        rightFront.setPower(power);
-        leftBack.setTargetPosition(750);
-        leftFront.setTargetPosition(750);
-        rightBack.setTargetPosition(750);
-        rightFront.setTargetPosition(750);
-        sleep(1500);
+        encoderDrive(-500,-500,-500,-500);
+        encoderDrive(500, -500, -500, 500);
+        encoderDrive(500,500,500,500);
 
         encoderDrive(tarPos,-tarPos,-tarPos,tarPos);
         if (detector.isFound()){ // Detects if the gold mineral is in the middle
             encoderDrive(5000,-5000,-5000,5000); // Pushes it towards the depot ( sideways )
-            encoderDrive(3000, -3000, -3000, 3000);
 
         }
         else {
             encoderDrive(tarPos,tarPos,tarPos,tarPos); // Goes left ( forwards )
+            if (detector.isFound()){ // Detects if the gold mineral is on the left from the hanger
+                encoderDrive(5000, -5000, -5000, 5000); // Pushes it towards the depot ( sideways )
+                encoderDrive(-2000,-2000,-2000,-2000);
+
+            }
+            else {
+                encoderDrive(-4000,-4000,-4000,-4000); // Goes right to the last cube ( backwards )
+                encoderDrive(5000,-5000,-5000, 5000);  // Pushes it towards the depot ( sideways )
+                encoderDrive(2000,2000,2000,2000);
+            }
         }
 
-        if (detector.isFound()){ // Detects if the gold mineral is on the left from the hanger
-            encoderDrive(5000, -5000, -5000, 5000); // Pushes it towards the depot ( sideways )
-            encoderDrive(-2000,-2000,-2000,-2000);
-            encoderDrive(2800, -2800, -2800, 2800);
 
-        }
-        else {
-            encoderDrive(-4000,-4000,-4000,-4000); // Goes right to the last cube ( backwards )
 
-            encoderDrive(5000,-5000,-5000, 5000);  // Pushes it towards the depot ( sideways )
-            encoderDrive(2000,2000,2000,2000);
-            encoderDrive(2800, -2800, -2800, 2800);
-        }
+        encoderDrive(4000,-4000,-4000,4000);
+        teamMarker.setPosition(0);
+        encoderDrive(500,500,-500,-500);
 
 
 
@@ -167,5 +191,40 @@ public class AutoDepotSide extends LinearOpMode
             sleep(50);
 
         }
+
+        public void turn(int target) throws InterruptedException {
+            if (opModeIsActive()){
+
+                Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //Doesn't work for either extrinsic or intrinsic.
+                double firstAngle = angles.firstAngle;
+
+                while (firstAngle != target){
+                    double turnPower = 0.15;
+                    angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                    firstAngle = angles.firstAngle;
+
+                    if (firstAngle < target){
+                        leftFront.setPower(-turnPower);
+                        rightFront.setPower(turnPower);
+                        leftBack.setPower(-turnPower);
+                        rightBack.setPower(turnPower);
+                    }
+                    if (firstAngle > target){
+                        leftFront.setPower(turnPower);
+                        rightFront.setPower(-0.15);
+                        leftBack.setPower(0.15);
+                        rightBack.setPower(-0.15);
+                    }
+
+                }
+                leftFront.setPower(0);
+                rightFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+
+                sleep(25);
+            }
+
+    }
     }
 
