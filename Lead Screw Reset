@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,7 +10,7 @@ public class LeadScrewReset extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DcMotor lScrew;
         lScrew = hardwareMap.dcMotor.get("LScrew");
-
+        waitForStart();
         lScrew.setPower(1);
         sleep(11500);
     }
